@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GridSmith — Practice Sets from Your Curriculum Grid</title>
+<meta name="description" content="GridSmith turns a curriculum grid (kisi-kisi) into a leveled elementary practice set with a worked answer key — in seconds, fully offline.">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%234f46e5'/%3E%3Cpath d='M9 23V9h4v5h6V9h4v14h-4v-5H13v5z' fill='white'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<header class="site-header no-print">
+  <div class="header-inner">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="30" height="30"><rect width="32" height="32" rx="7" fill="#fff"/><path d="M9 23V9h4v5h6V9h4v14h-4v-5H13v5z" fill="#4f46e5"/></svg>
+      </span>
+      <div>
+        <span class="brand-name">GridSmith</span>
+        <span class="brand-tag">Practice sets, forged from your curriculum grid</span>
+      </div>
+    </div>
+    <span class="offline-badge">Works 100% offline · No sign-up</span>
+  </div>
+</header>
+
+<section class="hero no-print">
+  <h1>Tonight's homework, <span class="hero-accent">handled.</span></h1>
+  <p>Paste your class curriculum grid — or just pick a grade, subject and topics — and GridSmith builds a
+     leveled practice set with a fully worked answer key. Print it, save it as a PDF, done.</p>
+  <div class="hero-points">
+    <span>Grades 1–6</span><span>Mathematics &amp; English</span><span>Easy / Medium / Hard mix</span><span>Step-by-step answer key</span>
+  </div>
+</section>
+
+<main class="layout">
+  <!-- ============ CONTROLS ============ -->
+  <aside class="panel controls no-print" aria-label="Practice set settings">
+    <div class="panel-head">
+      <h2>Build your set</h2>
+      <p>Every question is generated fresh — numbers, names and stories change on every run.</p>
+    </div>
+
+    <div class="field">
+      <span class="field-label" id="lbl-student">Worksheet header</span>
+      <div class="student-grid" role="group" aria-labelledby="lbl-student">
+        <input type="text" id="studentName" placeholder="Student name (optional)">
+        <input type="text" id="studentClass" placeholder="Class (optional)">
+      </div>
+    </div>
+
+    <div class="field">
+      <span class="field-label">Grade</span>
+      <div class="segmented" id="gradeSeg" role="radiogroup" aria-label="Grade"></div>
+    </div>
+
+    <div class="field">
+      <span class="field-label">Subject</span>
+      <div class="subject-row" id="subjectRow">
+        <button type="button" class="subject-card active" data-subject="math">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 4h12M6 20h12M12 4v16M6 12h12" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M4 8l4-4M20 8l-4-4M4 16l4 4M20 16l-4 4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+          Mathematics
+        </button>
+        <button type="button" class="subject-card" data-subject="english">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 5a2 2 0 0 1 2-2h13v16H7a2 2 0 0 0-2 2z" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M5 19a2 2 0 0 1 2-2h13" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+          English Language
+        </button>
+      </div>
+    </div>
+
+    <div class="field">
+      <span class="field-label">Topics <span class="field-hint">— from the checkboxes, or read from your grid below</span></span>
+      <div class="topic-chips" id="topicChips"></div>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="gridText">Paste your curriculum grid (kisi-kisi)</label>
+      <textarea id="gridText" rows="5" placeholder="One topic per line, in English or Bahasa Indonesia. For example:&#10;Penjumlahan dan pengurangan&#10;Pecahan sederhana&#10;Perkalian dan pembagian&#10;Kehidupan di laut dalam"></textarea>
+      <p class="field-note">Lines that match a known topic are mapped automatically. Lines that don't match become
+        themes for word problems — nothing you paste is wasted.</p>
+      <div id="mappingPreview" class="mapping-preview" hidden></div>
+    </div>
+
+    <div class="field">
+      <span class="field-label">Difficulty mix</span>
+      <div class="slider-row">
+        <label for="wEasy"><span class="dot dot-easy"></span>Easy</label>
+        <input type="range" id="wEasy" min="0" max="10" value="4">
+        <output id="wEasyOut"></output>
+      </div>
+      <div class="slider-row">
+        <label for="wMedium"><span class="dot dot-medium"></span>Medium</label>
+        <input type="range" id="wMedium" min="0" max="10" value="4">
+        <output id="wMediumOut"></output>
+      </div>
+      <div class="slider-row">
+        <label for="wHard"><span class="dot dot-hard"></span>Hard</label>
+        <input type="range" id="wHard" min="0" max="10" value="2">
+        <output id="wHardOut"></output>
+      </div>
+      <div class="mix-bar" aria-hidden="true">
+        <span class="mix-easy" id="mixEasy"></span><span class="mix-medium" id="mixMedium"></span><span class="mix-hard" id="mixHard"></span>
+      </div>
+    </div>
+
+    <div class="field">
+      <span class="field-label">Number of questions</span>
+      <div class="segmented" id="countSeg" role="radiogroup" aria-label="Number of questions"></div>
+    </div>
+
+    <button type="button" class="btn-primary" id="btnGenerate">
+      <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M12 3l1.7 4.6L18 9l-4.3 1.4L12 15l-1.7-4.6L6 9l4.3-1.4zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z" fill="currentColor"/></svg>
+      Generate practice set
+    </button>
+    <div class="btn-row">
+      <button type="button" class="btn-ghost" id="btnRegen" disabled>↻ New numbers</button>
+      <button type="button" class="btn-ghost" id="btnPrint" disabled>
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M7 8V3h10v5M7 17H4V8h16v9h-3M7 14h10v7H7z" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linejoin="round"/></svg>
+        Print / Save PDF
+      </button>
+    </div>
+    <label class="check-line">
+      <input type="checkbox" id="printKey" checked>
+      Include the answer key in the printout (on its own pages)
+    </label>
+  </aside>
+
+  <!-- ============ OUTPUT ============ -->
+  <section class="output" id="outputArea" aria-live="polite">
+    <div class="empty-state" id="emptyState">
+      <svg viewBox="0 0 120 90" width="150" aria-hidden="true">
+        <rect x="18" y="10" width="84" height="70" rx="8" fill="#eef2ff" stroke="#c7d2fe" stroke-width="2"/>
+        <line x1="32" y1="30" x2="88" y2="30" stroke="#a5b4fc" stroke-width="4" stroke-linecap="round"/>
+        <line x1="32" y1="46" x2="76" y2="46" stroke="#c7d2fe" stroke-width="4" stroke-linecap="round"/>
+        <line x1="32" y1="62" x2="82" y2="62" stroke="#c7d2fe" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="90" cy="66" r="13" fill="#f59e0b"/>
+        <path d="M84 66l4 4 8-8" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h2>Your worksheet will appear here</h2>
+      <p>Choose a grade and subject on the left, then press <b>Generate practice set</b>.
+         Try pasting a real curriculum grid — GridSmith reads both English and Bahasa Indonesia topic lines.</p>
+    </div>
+
+    <div id="resultWrap" hidden>
+      <div class="result-toolbar no-print">
+        <div>
+          <h2 id="resultTitle">Practice set ready</h2>
+          <p id="resultMeta"></p>
+        </div>
+        <button type="button" class="btn-key" id="btnKey" aria-expanded="false">Show answer key</button>
+      </div>
+      <div id="mappingPanel" class="mapping-panel no-print" hidden></div>
+
+      <article class="paper worksheet" id="worksheet"></article>
+      <article class="paper answer-key" id="answerKey" hidden></article>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer no-print">
+  <p>GridSmith — built for teachers and parents who prepare practice questions the night before.
+     Generated locally in your browser; no data ever leaves this page.</p>
+</footer>
+
+<script src="data.js"></script>
+<script src="engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
